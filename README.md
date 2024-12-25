@@ -2,7 +2,7 @@
 
 Bu proje, Google'ın Gemini AI modelini kullanan, Python ve Tkinter ile geliştirilmiş basit bir sohbet uygulamasıdır. Kullanıcıların Gemini AI ile etkileşime girmesini sağlayan kullanıcı dostu bir arayüz sunar.
 
-<img width="912" alt="SCR-20241226-ccny" src="https://github.com/user-attachments/assets/8df824f5-d36c-460c-a005-e19070627863" />
+<img width="912" alt="image" src="https://github.com/user-attachments/assets/176d8e23-d95f-4a1f-8159-747a3f801514" />
 
 
 ## Özellikler
