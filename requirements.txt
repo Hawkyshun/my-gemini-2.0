@@ -1,3 +1,2 @@
-tkinter
 python-dotenv
 google-generativeai 

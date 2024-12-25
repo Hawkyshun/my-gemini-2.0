@@ -9,16 +9,19 @@ import time
 class GeminiArayuz:
     def __init__(self, root):
         self.root = root
-        self.root.title("Gemini AI Sohbet Arayüzü")
+        load_dotenv()
+        model_name = os.getenv('GEMINI_MODEL')
+        if not model_name:
+            raise Exception("HATA: GEMINI_MODEL bulunamadı! Lütfen .env dosyanızı kontrol edin.")
+        
+        self.root.title(f"Gemini AI ({model_name})")
         self.root.geometry("800x600")
 
         # API Yapılandırması
-        load_dotenv()
         api_key = os.getenv('GEMINI_API_KEY')
         if not api_key:
             raise Exception("HATA: GEMINI_API_KEY bulunamadı! Lütfen .env dosyanızı kontrol edin.")
         
-        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.0-flash-thinking-exp-1219')  # Varsayılan olarak gemini 2.0 flash thinking exp 1219 kullan
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(model_name)
         self.chat = self.model.start_chat(history=[])
