@@ -35,10 +35,10 @@ Bu proje, Google'ın Gemini AI modelini kullanan, Python ve Tkinter ile gelişti
    pip install -r requirements.txt
    ```
 
-4. `.env` dosyası oluşturun:
+4. `.env` dosyası oluşturun: 
    ```plaintext
-   GEMINI_API_KEY="your-api-key-here"
-   GEMINI_MODEL="gemini-pro"
+   GEMINI_API_KEY="your-api-key-here" # - https://ai.google.dev/gemini-api/docs/api-key
+   GEMINI_MODEL="gemini-model-xxx" # - https://ai.google.dev/gemini-api/docs/models/gemini
    ```
 
 ## Kullanım
