@@ -20,10 +20,6 @@ Bu proje, Google'ın Gemini AI modelini kullanan, Python ve Tkinter ile gelişti
 ## Kurulum
 
 1. Depoyu klonlayın:
-   ```bash
-   git clone https://github.com/kullaniciadi/gemini-chat-gui.git
-   cd gemini-chat-gui
-   ```
 
 2. Sanal ortam oluşturun ve etkinleştirin:
    ```bash
