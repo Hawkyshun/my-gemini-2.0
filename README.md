@@ -2,12 +2,13 @@
 
 Bu proje, Google'ın Gemini AI modelini kullanan, Python ve Tkinter ile geliştirilmiş basit bir sohbet uygulamasıdır. Kullanıcıların Gemini AI ile etkileşime girmesini sağlayan kullanıcı dostu bir arayüz sunar.
 
+<img width="912" alt="SCR-20241226-ccny" src="https://github.com/user-attachments/assets/8df824f5-d36c-460c-a005-e19070627863" />
+
+
 ## Özellikler
 
 - 🤖 Gemini AI ile gerçek zamanlı sohbet
 - 💬 Kelime kelime metin akışı
-- ⚡ Yanıt oluşturmayı iptal edebilme
-- 📱 Yeniden boyutlandırılabilir arayüz
 - 🌐 Çoklu model desteği (.env üzerinden yapılandırılabilir)
 
 ## Gereksinimler
@@ -15,7 +16,6 @@ Bu proje, Google'ın Gemini AI modelini kullanan, Python ve Tkinter ile gelişti
 - Python 3.x
 - google-generativeai
 - python-dotenv
-- tkinter (Python ile birlikte gelir)
 
 ## Kurulum
 
