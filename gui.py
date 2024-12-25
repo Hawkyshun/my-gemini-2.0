@@ -41,6 +41,11 @@ class GeminiArayuz:
         self.chat_area = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, height=20)
         self.chat_area.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
         self.chat_area.config(state='disabled')
+        
+        # Markdown için tag'leri tanımla
+        self.chat_area.tag_configure("heading1", font=("TkDefaultFont", 18, "bold"))
+        self.chat_area.tag_configure("heading2", font=("TkDefaultFont", 16, "bold"))
+        self.chat_area.tag_configure("bold", font=("TkDefaultFont", 10, "bold"))
 
         # Durum etiketi
         self.status_label = ttk.Label(main_frame, text="")
@@ -63,13 +68,29 @@ class GeminiArayuz:
 
     def append_to_chat(self, message, is_user=True, new_response=False):
         self.chat_area.config(state='normal')
+        
         if new_response:
             self.chat_area.insert(tk.END, f"\nGemini: ")
         else:
             if is_user:
                 self.chat_area.insert(tk.END, f"\nSiz: {message}\n")
             else:
-                self.chat_area.insert(tk.END, message)
+                # Markdown formatını işle
+                if message.startswith('# '):
+                    self.chat_area.insert(tk.END, message[2:], "heading1")
+                elif message.startswith('## '):
+                    self.chat_area.insert(tk.END, message[3:], "heading2")
+                elif '**' in message:
+                    # Bold text işleme
+                    parts = message.split('**')
+                    for i, part in enumerate(parts):
+                        if i % 2 == 1:  # Bold kısımlar
+                            self.chat_area.insert(tk.END, part, "bold")
+                        else:  # Normal text
+                            self.chat_area.insert(tk.END, part)
+                else:
+                    self.chat_area.insert(tk.END, message)
+        
         self.chat_area.see(tk.END)
         self.chat_area.config(state='disabled')
 
@@ -89,26 +110,25 @@ class GeminiArayuz:
             response = self.chat.send_message(message, stream=True)
             self.root.after(0, lambda: self.append_to_chat("", is_user=False, new_response=True))
             
-            accumulated_text = ""
+            buffer = ""
             for chunk in response:
                 if self.cancel_response:
                     self.root.after(0, lambda: self.append_to_chat("\n[Yanıt iptal edildi]\n", is_user=False))
                     break
                     
                 if chunk.text:
-                    accumulated_text += chunk.text
-                    words = accumulated_text.split()
+                    text = chunk.text
+                    buffer += text
                     
-                    while len(words) > 0 and not self.cancel_response:
-                        # Her seferinde 6 kelime al
-                        display_words = " ".join(words[:6]) + " "
-                        words = words[6:]
-                        self.root.after(0, lambda w=display_words: self.append_to_chat(w, is_user=False))
-                        accumulated_text = " ".join(words)
-                        time.sleep(0.05)  # Hala küçük bir gecikme bırakıyoruz
+                    # Markdown işaretlerini kontrol et
+                    if ('**' in buffer and buffer.count('**') % 2 == 0) or \
+                       buffer.endswith(('.', '!', '?', '\n')):
+                        self.root.after(0, lambda b=buffer: self.append_to_chat(b, is_user=False))
+                        buffer = ""
+                        time.sleep(0.1)
             
-            if not self.cancel_response:
-                self.root.after(0, lambda: self.append_to_chat("\n", is_user=False))
+            if buffer:  # Kalan metni gönder
+                self.root.after(0, lambda: self.append_to_chat(buffer, is_user=False))
             
         except Exception as e:
             self.root.after(0, lambda: self.append_to_chat(f"Hata oluştu: {str(e)}", is_user=False))
