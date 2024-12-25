@@ -34,7 +34,7 @@ class GeminiArayuz:
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-        # Sohbet geçmişi
+        # Sohbet geçmişi - weight parametresi ile genişleyebilir yapıyoruz
         self.chat_area = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, height=20)
         self.chat_area.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
         self.chat_area.config(state='disabled')
@@ -49,13 +49,14 @@ class GeminiArayuz:
         self.message_entry.bind('<Return>', lambda e: self.send_message())
 
         # Gönder butonu
-        self.send_button = ttk.Button(main_frame, text="Gönder", command=self.send_message)
+        self.send_button = ttk.Button(main_frame, text=">", command=self.send_message)
         self.send_button.grid(row=2, column=1, padx=5, pady=10)
 
-        # Grid yapılandırması
+        # Grid yapılandırması - tüm yönlerde genişleyebilmesi için weight'leri ayarlıyoruz
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(0, weight=1)  # Sohbet alanının genişleyebilmesi için
 
     def append_to_chat(self, message, is_user=True, new_response=False):
         self.chat_area.config(state='normal')
@@ -81,24 +82,30 @@ class GeminiArayuz:
 
     def process_message(self, message):
         try:
+            self.cancel_response = False
             response = self.chat.send_message(message, stream=True)
             self.root.after(0, lambda: self.append_to_chat("", is_user=False, new_response=True))
             
             accumulated_text = ""
             for chunk in response:
+                if self.cancel_response:
+                    self.root.after(0, lambda: self.append_to_chat("\n[Yanıt iptal edildi]\n", is_user=False))
+                    break
+                    
                 if chunk.text:
                     accumulated_text += chunk.text
                     words = accumulated_text.split()
                     
-                    while len(words) > 0:
-                        # Kelime kelime ekrana yazdır
-                        word = words.pop(0) + " "
-                        self.root.after(0, lambda w=word: self.append_to_chat(w, is_user=False))
+                    while len(words) > 0 and not self.cancel_response:
+                        # Her seferinde 6 kelime al
+                        display_words = " ".join(words[:6]) + " "
+                        words = words[6:]
+                        self.root.after(0, lambda w=display_words: self.append_to_chat(w, is_user=False))
                         accumulated_text = " ".join(words)
-                        time.sleep(0.05)  # Her kelime arasında küçük bir gecikme
+                        time.sleep(0.05)  # Hala küçük bir gecikme bırakıyoruz
             
-            # Son satır
-            self.root.after(0, lambda: self.append_to_chat("\n", is_user=False))
+            if not self.cancel_response:
+                self.root.after(0, lambda: self.append_to_chat("\n", is_user=False))
             
         except Exception as e:
             self.root.after(0, lambda: self.append_to_chat(f"Hata oluştu: {str(e)}", is_user=False))
